@@ -1,0 +1,61 @@
+services:
+  mongo:
+    image: mongo:8
+    container_name: bookfinder-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bookfinder
+      MONGO_INITDB_ROOT_PASSWORD: bookfinderpass
+      MONGO_INITDB_DATABASE: books
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "mongodb://bookfinder:bookfinderpass@localhost:27017/admin",
+          "--eval",
+          "db.runCommand({ ping: 1 }).ok",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: bookfinder-mongo-express
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: bookfinder
+      ME_CONFIG_MONGODB_ADMINPASSWORD:
+      ME_CONFIG_MONGODB_URL: mongodb://bookfinder:bookfinderpass@mongo:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: adminpass
+
+  app:
+    build: ./app
+    container_name: bookfinder-app
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MONGO_URL: mongodb://bookfinder:bookfinderpass@mongo:27017/books?authSource=admin
+      BOOKS_ROOTS: /library/mobi
+    volumes:
+      - /media/emilio/1040B01740B0060E/books:/library/mobi:ro
+
+volumes:
+  mongo_data:

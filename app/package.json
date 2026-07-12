@@ -1,0 +1,33 @@
+{
+    "name": "bookfinder",
+    "version": "1.0.0",
+    "description": "Local book searcher with Node, TypeScript and MongoDB",
+    "main": "dist/server.js",
+    "type": "commonjs",
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/server.js",
+        "dev": "ts-node src/server.ts",
+        "scrape": "ts-node src/scrapper/scrapper_authors.ts",
+        "save-links": "ts-node src/scrapper/save_links_book.ts",
+        "get-final-links": "ts-node src/scrapper/get_final_link.ts",
+        "download-telegram": "ts-node src/telegram_downloader/index.ts"
+    },
+    "dependencies": {
+        "@inquirer/prompts": "^8.3.2",
+        "axios": "1.14.0",
+        "cheerio": "^1.2.0",
+        "express": "^4.21.2",
+        "input": "^1.0.1",
+        "mongodb": "^6.16.0",
+        "puppeteer": "^24.40.0",
+        "telegram": "^2.26.22"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.1",
+        "@types/node": "^22.19.17",
+        "@types/puppeteer": "^5.4.7",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    }
+}
